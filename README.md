@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kwik Meal Web
+
+A modern React frontend for the Kwik Meal recipe API. Built with Next.js, shadcn/ui, and Tailwind CSS.
+
+## Features
+
+- **Tokenized Ingredient Search**: Add ingredients as tags with easy removal
+- **Real-time Recipe Search**: Fast search through 10,000+ recipes
+- **Beautiful UI**: Modern design with shadcn/ui components
+- **Responsive Design**: Works great on desktop and mobile
+- **Loading States**: Skeleton loaders for smooth UX
+- **Error Handling**: Graceful error display and recovery
+
+## Tech Stack
+
+- Next.js 14 with App Router
+- React 18 with TypeScript
+- Tailwind CSS for styling
+- shadcn/ui component library
+- Lucide React for icons
 
 ## Getting Started
 
-First, run the development server:
+1. **Install dependencies:**
+
+   ```bash
+   npm install
+   ```
+
+2. **Start the development server:**
+
+   ```bash
+   npm run dev
+   ```
+
+3. **Open in browser:**
+   Navigate to [http://localhost:3001](http://localhost:3001)
+
+## API Configuration
+
+The frontend connects to the Kwik Meal API running on `http://localhost:3000` by default.
+
+To change the API URL, set the `NEXT_PUBLIC_API_BASE_URL` environment variable:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# .env.local
+NEXT_PUBLIC_API_BASE_URL=http://your-api-server:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Usage
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Add Ingredients**: Type ingredient names and press Enter to add them as tags
+2. **Remove Ingredients**: Click the X on any tag or press Backspace when the input is empty
+3. **Search**: Click the Search button to find recipes
+4. **View Results**: Browse recipe cards with ingredients, ratings, and cooking times
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Features in Detail
 
-## Learn More
+### Tokenized Input
 
-To learn more about Next.js, take a look at the following resources:
+- Type ingredients and press Enter to add them
+- Visual tags show added ingredients
+- Easy removal with click or keyboard
+- Prevents duplicate ingredients
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Recipe Display
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Beautiful recipe cards with images
+- Highlighted matching ingredients
+- Recipe ratings, cooking times, and cuisine info
+- Responsive grid layout
 
-## Deploy on Vercel
+### Smart Search
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Handles typos and partial matches (powered by the API)
+- Fast search results with performance metrics
+- Loading states with skeleton components
+- Error handling with user-friendly messages
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Development
+
+### Project Structure
+
+```
+src/
+├── app/                 # Next.js app router
+│   ├── layout.tsx      # Root layout
+│   └── page.tsx        # Main page
+├── components/         # React components
+│   ├── ui/            # shadcn/ui components
+│   ├── ingredient-input.tsx
+│   └── recipe-card.tsx
+└── lib/               # Utilities
+    ├── api.ts         # API client
+    └── utils.ts       # Utility functions
+```
+
+### Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+
+## Building for Production
+
+```bash
+npm run build
+npm run start
+```
+
+The app will be available at [http://localhost:3000](http://localhost:3000) (or your configured port).

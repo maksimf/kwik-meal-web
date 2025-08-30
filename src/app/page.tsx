@@ -1,103 +1,155 @@
-import Image from "next/image";
+"use client";
+
+import { IngredientInput } from "@/components/ingredient-input";
+import { RecipeCard } from "@/components/recipe-card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { RecipeAPI, type Recipe, type SearchResponse } from "@/lib/api";
+import { ChefHat, Utensils } from "lucide-react";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [searchResults, setSearchResults] = useState<SearchResponse | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchIngredients, setSearchIngredients] = useState<string[]>([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleSearch = async (ingredients: string[]) => {
+    setIsLoading(true);
+    setError(null);
+    setSearchIngredients(ingredients);
+
+    try {
+      const results = await RecipeAPI.searchByIngredients(ingredients);
+      setSearchResults(results);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to search recipes");
+      setSearchResults(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
+      {/* Header */}
+      <header className="text-center py-12">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <ChefHat className="h-8 w-8 text-orange-600" />
+          <h1 className="text-4xl font-bold text-gray-900">Kwik Meal</h1>
+          <Utensils className="h-8 w-8 text-orange-600" />
         </div>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto px-4">
+          Find delicious recipes based on ingredients you have at home. Just add
+          your ingredients and discover what you can cook!
+        </p>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 pb-12">
+        {/* Search Section */}
+        <div className="max-w-4xl mx-auto mb-12">
+          <IngredientInput onSearch={handleSearch} isLoading={isLoading} />
+        </div>
+
+        {/* Results Section */}
+        {error && (
+          <div className="max-w-2xl mx-auto mb-8 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-700 text-center">{error}</p>
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="space-y-3">
+                  <Skeleton className="h-48 w-full rounded-lg" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-6 w-16" />
+                    <Skeleton className="h-6 w-20" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {searchResults && !isLoading && (
+          <div className="max-w-6xl mx-auto">
+            {/* Search Results Header */}
+            <div className="mb-8 text-center">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+                Found {searchResults.search_metadata.total_results} recipes
+              </h2>
+              <p className="text-gray-600">
+                Searched for:{" "}
+                {searchResults.search_metadata.query_ingredients.join(", ")}
+                <span className="text-sm ml-2">
+                  ({searchResults.search_metadata.search_time_ms.toFixed(1)}ms)
+                </span>
+              </p>
+            </div>
+
+            {/* Recipe Grid */}
+            {searchResults.results.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {searchResults.results.map((recipe) => (
+                  <RecipeCard
+                    key={recipe.id}
+                    recipe={recipe}
+                    searchIngredients={searchIngredients}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <ChefHat className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                  No recipes found
+                </h3>
+                <p className="text-gray-600">
+                  Try different ingredients or check your spelling
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Welcome State */}
+        {!searchResults && !isLoading && !error && (
+          <div className="max-w-2xl mx-auto text-center py-16">
+            <ChefHat className="h-24 w-24 text-orange-400 mx-auto mb-6" />
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              Ready to cook something amazing?
+            </h2>
+            <p className="text-gray-600 mb-8">
+              Enter the ingredients you have available and we'll find the
+              perfect recipes for you. Our search handles typos and finds
+              recipes even with partial ingredient matches!
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-gray-500">
+              <div>
+                <Utensils className="h-6 w-6 mx-auto mb-2 text-orange-400" />
+                <p>10,000+ recipes</p>
+              </div>
+              <div>
+                <ChefHat className="h-6 w-6 mx-auto mb-2 text-orange-400" />
+                <p>Smart ingredient matching</p>
+              </div>
+              <div>
+                <div className="h-6 w-6 mx-auto mb-2 bg-orange-400 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                  ⚡
+                </div>
+                <p>Fast search results</p>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
