@@ -126,26 +126,17 @@ export function RecipeCard({ recipe, searchIngredients }: RecipeCardProps) {
         <div>
           <h4 className="text-sm font-medium mb-2">Ingredients:</h4>
           <div className="flex flex-wrap gap-1">
-            {highlightedIngredients
-              .slice(0, 8)
-              .map(({ ingredient, isMatch }, index) => (
-                <Badge
-                  key={index}
-                  variant={isMatch ? "default" : "secondary"}
-                  className={`text-xs ${
-                    isMatch
-                      ? "bg-green-100 text-green-800 border-green-200"
-                      : ""
-                  }`}
-                >
-                  {ingredient}
-                </Badge>
-              ))}
-            {ingredientsArray.length > 8 && (
-              <Badge variant="secondary" className="text-xs">
-                +{ingredientsArray.length - 8} more
+            {highlightedIngredients.map(({ ingredient, isMatch }, index) => (
+              <Badge
+                key={index}
+                variant={isMatch ? "default" : "secondary"}
+                className={`text-xs ${
+                  isMatch ? "bg-green-100 text-green-800 border-green-200" : ""
+                }`}
+              >
+                {ingredient}
               </Badge>
-            )}
+            ))}
           </div>
         </div>
 
