@@ -3,7 +3,7 @@
 import { IngredientInput } from "@/components/ingredient-input";
 import { RecipeCard } from "@/components/recipe-card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RecipeAPI, type Recipe, type SearchResponse } from "@/lib/api";
+import { RecipeAPI, type SearchResponse } from "@/lib/api";
 import { ChefHat, Utensils } from "lucide-react";
 import { useState } from "react";
 
@@ -127,7 +127,7 @@ export default function Home() {
               Ready to cook something amazing?
             </h2>
             <p className="text-gray-600 mb-8">
-              Enter the ingredients you have available and we'll find the
+              Enter the ingredients you have available and we&apos;ll find the
               perfect recipes for you. Our search handles typos and finds
               recipes even with partial ingredient matches!
             </p>

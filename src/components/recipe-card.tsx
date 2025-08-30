@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChefHat, Clock, Star, Users } from "lucide-react";
+import Image from "next/image";
 
 interface Recipe {
   id: number;
@@ -45,7 +46,7 @@ export function RecipeCard({ recipe, searchIngredients }: RecipeCardProps) {
         if (Array.isArray(parsed)) {
           return parsed;
         }
-      } catch (e) {
+      } catch {
         // If JSON parsing fails, fall back to comma splitting
       }
 
@@ -74,10 +75,11 @@ export function RecipeCard({ recipe, searchIngredients }: RecipeCardProps) {
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-200">
       <div className="aspect-video relative overflow-hidden">
         {recipe.image ? (
-          <img
+          <Image
             src={recipe.image}
             alt={recipe.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
             onError={(e) => {
               e.currentTarget.style.display = "none";
               e.currentTarget.nextElementSibling?.classList.remove("hidden");
