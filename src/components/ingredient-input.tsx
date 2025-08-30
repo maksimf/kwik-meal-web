@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Trash, X } from "lucide-react";
+import { Check, Search, Trash, X } from "lucide-react";
 import { KeyboardEvent, useState } from "react";
 
 interface IngredientInputProps {
@@ -11,15 +11,24 @@ interface IngredientInputProps {
   isLoading?: boolean;
 }
 
+const COMMON_INGREDIENTS = [
+  "chicken",
+  "onion",
+  "garlic",
+  "tomato",
+  "rice",
+  "pasta",
+  "cheese",
+  "eggs",
+  "potatoes",
+  "olive oil",
+];
+
 export function IngredientInput({
   onSearch,
   isLoading = false,
 }: IngredientInputProps) {
-  const [ingredients, setIngredients] = useState<string[]>([
-    "basil",
-    "tomato",
-    "pasta",
-  ]);
+  const [ingredients, setIngredients] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
 
   const addIngredient = (ingredient: string) => {
@@ -112,6 +121,39 @@ export function IngredientInput({
           <Trash className="mr-2 h-4 w-4" />
           Clear
         </Button>
+      </div>
+
+      {/* Common Ingredients Suggestions */}
+      <div className="space-y-3">
+        <p className="text-sm font-medium text-gray-700 text-center">
+          Common ingredients:
+        </p>
+        <div className="flex flex-wrap gap-2 justify-center">
+          {COMMON_INGREDIENTS.map((ingredient) => {
+            const isSelected = ingredients.includes(ingredient);
+            return (
+              <Badge
+                key={ingredient}
+                variant={isSelected ? "default" : "outline"}
+                className={`cursor-pointer transition-colors flex items-center gap-1 ${
+                  isSelected
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-primary hover:text-primary-foreground"
+                }`}
+                onClick={() => {
+                  if (isSelected) {
+                    removeIngredient(ingredient);
+                  } else {
+                    addIngredient(ingredient);
+                  }
+                }}
+              >
+                {isSelected && <Check className="h-3 w-3" />}
+                {ingredient}
+              </Badge>
+            );
+          })}
+        </div>
       </div>
 
       {ingredients.length > 0 && (
