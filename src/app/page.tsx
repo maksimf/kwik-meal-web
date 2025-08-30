@@ -117,6 +117,10 @@ export default function Home() {
                   )
                 </span>
               </p>
+              <p className="text-sm text-gray-500 mt-2">
+                Results are ordered by relevance: recipes with the most matching
+                ingredients appear first
+              </p>
             </div>
 
             {/* Recipe Grid */}
