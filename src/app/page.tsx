@@ -4,7 +4,7 @@ import { IngredientInput } from "@/components/ingredient-input";
 import { RecipeCard } from "@/components/recipe-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RecipeAPI, type SearchResponse } from "@/lib/api";
-import { ChefHat, Utensils } from "lucide-react";
+import { ChefHat, Info, Utensils } from "lucide-react";
 import { useState } from "react";
 
 export default function Home() {
@@ -48,6 +48,23 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 pb-12">
+        {/* Performance Notice */}
+        <div className="max-w-4xl mx-auto mb-6">
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div className="text-sm text-blue-800">
+                <p className="font-medium mb-1">Server Performance Notice</p>
+                <p>
+                  Due to server size limitations, search routinely takes up to
+                  15 seconds, whereas locally it runs under a second. Thank you
+                  for your patience!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Search Section */}
         <div className="max-w-4xl mx-auto mb-12">
           <IngredientInput onSearch={handleSearch} isLoading={isLoading} />
@@ -89,7 +106,15 @@ export default function Home() {
                 Searched for:{" "}
                 {searchResults.search_metadata.query_ingredients.join(", ")}
                 <span className="text-sm ml-2">
-                  ({searchResults.search_metadata.search_time_ms.toFixed(1)}ms)
+                  (
+                  {searchResults.search_metadata.search_time_ms > 1000
+                    ? `${(
+                        searchResults.search_metadata.search_time_ms / 1000
+                      ).toFixed(2)}s`
+                    : `${searchResults.search_metadata.search_time_ms.toFixed(
+                        1
+                      )}ms`}
+                  )
                 </span>
               </p>
             </div>
